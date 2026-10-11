@@ -2,7 +2,7 @@
 
 ## Setup
 ```bash
-sudo apt install fastfetch        # or your distro's package
+sudo apt install fastfetch fonts-dejavu-core   # or your distro's packages
 python3 -m venv venv && . venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env              # fill in BOT_TOKEN and ALLOWED_USER_IDS
@@ -12,7 +12,7 @@ python bot.py
 ## Commands
 | Command | What it does |
 |---|---|
-| `/fastfetch` | Runs fastfetch and sends the output |
+| `/fastfetch` | Runs fastfetch and sends it as a colored image (logo + color blocks); falls back to text |
 | `/servstats` | CPU, RAM, swap, disk, load, uptime, network, temp |
 | `/uptime` | Boot time, uptime, load average |
 | `/disk` | All mounted disks |
