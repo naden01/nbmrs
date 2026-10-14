@@ -140,6 +140,7 @@ async def run_bytes(*cmd: str, timeout: int = 20, env: dict | None = None) -> by
         out, _ = await asyncio.wait_for(proc.communicate(), timeout)
     except asyncio.TimeoutError:
         proc.kill()
+        await proc.wait()  # reap the child so it does not linger as a zombie
         return f"Timed out after {timeout}s.".encode()
     return out
 
@@ -197,6 +198,7 @@ def _temperature() -> float | None:
     return None
 
 
+@functools.lru_cache(maxsize=1)
 def _os_name() -> str:
     try:
         return platform.freedesktop_os_release().get("PRETTY_NAME", platform.system())
@@ -344,7 +346,7 @@ async def view_net() -> View:
         await asyncio.sleep(1)
         b = psutil.net_io_counters()
         rx, tx = b.bytes_recv - a.bytes_recv, b.bytes_sent - a.bytes_sent
-        rx_hist = tx_hist = []
+        rx_hist, tx_hist = [], []
     else:
         rx, tx = HISTORY[-1]["rx"], HISTORY[-1]["tx"]
         rx_hist, tx_hist = [h["rx"] for h in HISTORY], [h["tx"] for h in HISTORY]
