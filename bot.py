@@ -48,7 +48,10 @@ except ImportError:
     RENDER_OK = False
 
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO)
-for noisy in ("httpx", "httpcore"):  # their INFO lines contain the bot token in the URL
+# Quiet the chatty per-tick INFO logs: httpx/httpcore embed the bot token in the
+# URL, and the JobQueue (APScheduler) logs "Running job / executed successfully"
+# for every 5s sample. Keep WARNING+ so real problems still surface.
+for noisy in ("httpx", "httpcore", "apscheduler.executors.default"):
     logging.getLogger(noisy).setLevel(logging.WARNING)
 log = logging.getLogger("servbot")
 
