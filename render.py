@@ -183,6 +183,12 @@ def _sev(pct: float):
 def fastfetch_png(raw, title: str = "") -> bytes:
     text = raw.decode("utf-8", "replace") if isinstance(raw, (bytes, bytearray)) else str(raw or "")
 
+    # fastfetch is piped (no TTY), so it emits bare LF. A real terminal applies
+    # ONLCR (LF -> CRLF) before the emulator sees it; pyte treats a lone LF as a
+    # line-feed *without* a carriage return, which would staircase every line to
+    # the right. Normalise to CRLF so each row starts back at column 0.
+    text = text.replace("\r\n", "\n").replace("\n", "\r\n")
+
     cols, lines = 110, 120
     screen = pyte.Screen(cols, lines)
     pyte.Stream(screen).feed(text)
